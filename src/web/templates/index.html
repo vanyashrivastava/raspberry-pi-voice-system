@@ -1,0 +1,57 @@
+<!-- Owner: Nicole
+     Responsibility: Dashboard front-end template for displaying recent alerts and system status.
+     Goals:
+       - Show recent alert events in a readable table
+       - Provide controls for acknowledge/mute on the Pi
+     Integration points:
+       - Server provides `alerts` (list of alert dicts) into this template
+       - JS calls `/api/ack` and `/api/alerts` for actions and polling
+     Testing requirements:
+       - Manual UI checks on Pi browser, unit tests for template rendering and XSS sanitization
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Raspberry Pi Scam Monitor</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Raspberry Pi Scam Monitor</h1>
+      <p class="subtitle">Live alerts and system health (for nursing home residents)</p>
+    </header>
+
+    <main>
+      <section id="status">
+        <h2>System Status</h2>
+        <div id="health">Loading status...</div>
+      </section>
+
+      <section id="alerts">
+        <h2>Recent Alerts</h2>
+        <table id="alerts-table">
+          <thead>
+            <tr><th>Time</th><th>Source</th><th>Probability</th><th>Notes</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            {% for a in alerts %}
+            <tr>
+              <td>{{ a.ts | default('') }}</td>
+              <td>{{ a.source | default('') }}</td>
+              <td>{{ a.scam_probability | default('') }}</td>
+              <td>{{ a.type | default('') }} {{ a.note | default('') }}</td>
+              <td><button class="ack" data-id="{{ a.message_id | default('') }}">Acknowledge</button></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">No alerts yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="/static/js/dashboard.js"></script>
+  </body>
+</html>

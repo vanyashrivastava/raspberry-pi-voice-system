@@ -1,0 +1,24 @@
+/* Owner: Nicole
+   Responsibility: Basic styling for the dashboard. Keep minimal for Pi browser performance.
+   Notes:
+     - Avoid heavy images or fonts for the Raspberry Pi's limited GPU.
+     - Keep CSS small and simple for faster load.
+*/
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  margin: 0;
+  padding: 0.5rem;
+  background: #f6f8fa;
+  color: #111;
+}
+header h1 { margin: 0; }
+.subtitle { color: #555; margin-top: 0.25rem; }
+main { margin-top: 1rem; }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 0.5rem; border-bottom: 1px solid #eee; text-align: left; }
+tr:nth-child(even) { background: #fbfbfb; }
+button.ack { background: #2b7cff; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; }
+
+@media (min-width: 800px) {
+  main { max-width: 900px; margin: 0 auto; }
+}

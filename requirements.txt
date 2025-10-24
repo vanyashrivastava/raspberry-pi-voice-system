@@ -1,0 +1,36 @@
+# Requirements for Raspberry Pi Scam Detection System
+# Note: On-device installations on Raspberry Pi may require specific wheels or
+# using `pip install --no-build-isolation` for heavy packages. Consider using
+# a virtual environment and installing via a requirements lock tuned for Pi.
+
+# Audio processing
+pyaudio
+scipy
+librosa
+
+# VOIP
+pjsua
+twilio
+
+# IMAP / email (stdlib imaplib/email are used, but include convenience libs)
+imapclient
+
+# Machine learning
+transformers
+torch
+scikit-learn
+
+# Web
+flask
+websockets
+
+# Hardware
+RPi.GPIO
+
+# Utilities
+numpy
+requests
+beautifulsoup4
+
+# Optional / developer
+pytest
