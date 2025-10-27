@@ -559,5 +559,3 @@ if __name__ == '__main__':
         print(f"   Duration: {elapsed:.1f} seconds")
         print(f"   Average rate: {frame_count/elapsed:.1f} frames/sec")
         print("\n✅ Test completed!")
-
-
