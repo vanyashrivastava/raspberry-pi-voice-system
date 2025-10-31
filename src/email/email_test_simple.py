@@ -275,8 +275,340 @@ To unsubscribe, click here.
 
 The New York Times
 '''
+        
+                # Email 7: Spear-phishing (targeted, appears from colleague)
+        
+        email7 = b'''Return-Path: <liaison@partners-company.com>
+Date: Mon, 27 Oct 2025 12:05:00 +0000
+From: Mark Allen <mark.allen@partners-company.com>
+To: rohan@example.com
+Subject: Fwd: Updated invoice - please approve
+Message-ID: <scam007@partners-company.com>
+Content-Type: text/plain; charset=UTF-8
 
-        return [email1, email2, email3, email4, email5, email6]
+Rohan,
+
+Can you quickly approve this updated invoice for the vendor? I'm in a meeting 
+and can't access Concur right now.
+
+Invoice: INV-2025-9987
+Amount: $12,450.00
+Approve here: http://partners-approve-payments.net/approve?id=9987
+
+Thanks,
+Mark
+Sent from my mobile
+'''
+
+        # Email 8: Fake courier / delivery scam (click link to "reschedule")
+        email8 = b'''Return-Path: <updates@fastship-delivery.com>
+Date: Mon, 27 Oct 2025 11:50:00 +0000
+From: FastShip Delivery <updates@fastship-delivery.com>
+To: customer@example.com
+Subject: ACTION REQUIRED: Delivery Attempt Failed - Reschedule Now
+Message-ID: <scam008@fastship-delivery.com>
+Content-Type: text/plain; charset=UTF-8
+
+Dear Customer,
+
+We attempted to deliver a package but were unable to reach you. Please reschedule 
+delivery or provide additional address details to avoid return to sender.
+
+Tracking Number: FS123456789US
+Reschedule: http://fastship-delivery-reschedule.ru/track?tn=FS123456789US
+
+If we do not receive a response within 48 hours the package will be returned.
+
+FastShip Customer Support
+'''
+
+        # Email 9: Romance scam / advance-fee request
+        email9 = b'''Return-Path: <lovelysender@mailbox.com>
+Date: Mon, 27 Oct 2025 11:30:00 +0000
+From: Anna Marie <anna.marie@mailbox.com>
+To: lonely@example.com
+Subject: I need your help - urgent travel expenses
+Message-ID: <scam009@mailbox.com>
+Content-Type: text/plain; charset=UTF-8
+
+Hi there,
+
+I've really enjoyed our chats these past few weeks. I have an unexpected 
+medical bill and a plane ticket issue while traveling abroad. I hate to ask 
+but could you send $1,200 to help cover the emergency so I can come see you?
+
+Send via MoneyGram to:
+Name: Anna M.
+City: Accra
+Reference: HELP2025
+
+I promise to pay you back and I can't thank you enough.
+
+Love,
+Anna
+'''
+
+        # Email 10: Fake job offer with attachment link (malicious .exe disguised)
+        email10 = b'''Return-Path: <recruiting@innovatehiring.com>
+Date: Mon, 27 Oct 2025 10:55:00 +0000
+From: Talent Acquisition <recruiting@innovatehiring.com>
+To: candidate@example.com
+Subject: Offer Letter & Onboarding Documents (Action Required)
+Message-ID: <scam010@innovatehiring.com>
+Content-Type: text/plain; charset=UTF-8
+
+Congratulations!
+
+We are pleased to extend you an offer for the position of Junior Analyst. 
+Please download the offer packet and complete the onboarding form.
+
+Download offer packet: http://innovatehiring-docs.com/offer_AnnaMalware.exe
+
+Start date: November 10, 2025
+Salary: $68,000/year
+
+Welcome aboard,
+Talent Acquisition
+Innovate Hiring Ltd.
+'''
+
+        # Email 11: Legitimate bank notification
+        email11 = b'''Return-Path: <alerts@trustbank.com>
+Date: Mon, 27 Oct 2025 10:10:00 +0000
+From: TrustBank Alerts <alerts@trustbank.com>
+To: customer@example.com
+Subject: Your Monthly Statement is Ready
+Message-ID: <notice011@trustbank.com>
+Content-Type: text/plain; charset=UTF-8
+
+Hello,
+
+Your October 2025 statement is now available online. No action is required 
+if you have already reviewed it.
+
+To view your statement, please sign in to your secure account at our official 
+website or use the TrustBank mobile app.
+
+Thank you for banking with TrustBank.
+
+TrustBank Customer Service
+'''
+
+        # Email 12: Investment/crypto scam
+        email12 = b'''Return-Path: <invest@crypto-profits.io>
+Date: Mon, 27 Oct 2025 09:50:00 +0000
+From: Crypto Profits <invest@crypto-profits.io>
+To: investor@example.com
+Subject: Double Your Crypto in 7 Days - Exclusive Offer
+Message-ID: <scam012@crypto-profits.io>
+Content-Type: text/plain; charset=UTF-8
+
+EXCLUSIVE - LIMITED SLOTS AVAILABLE
+
+Invest $5,000 in our proprietary trading bot and receive 100 percent returns within 7 days.
+This opportunity is only offered to select clients.
+
+Register now to secure your slot:
+https://crypto-profits-quick.com/signup?ref=elite
+
+Risk-free guarantee included. Minimum deposit: $500.
+
+Sincerely,
+Crypto Profits Team
+'''
+
+        # Email 13: Invoice scam
+        email13 = b'''Return-Path: <billing@acme-supplies.co>
+Date: Mon, 27 Oct 2025 09:20:00 +0000
+From: ACME Supplies Billing <billing@acme-supplies.co>
+To: accounting@example.com
+Subject: Past Due Invoice - Urgent Payment Required
+Message-ID: <scam013@acme-supplies.co>
+Content-Type: text/plain; charset=UTF-8
+
+Attention Accounts Payable,
+
+Our records indicate Invoice #A-55432 is past due. Immediate payment is required 
+to avoid a late fee.
+
+Invoice: A-55432
+Amount Due: $7,880.00
+Pay here: http://acme-billing-payments.net/pay?inv=A-55432
+
+Please confirm payment once processed.
+
+Regards,
+ACME Supplies - Billing Department
+'''
+
+        # Email 14: Fake government tax notice
+        email14 = b'''Return-Path: <taxnotice@irs-tax.gov>
+Date: Mon, 27 Oct 2025 08:40:00 +0000
+From: IRS Tax <taxnotice@irs-tax.gov>
+To: taxpayer@example.com
+Subject: Immediate Action Required: Unpaid Taxes Owed
+Message-ID: <scam014@irs-tax.gov>
+Content-Type: text/plain; charset=UTF-8
+
+NOTICE OF TAX DELINQUENCY
+
+Our records show outstanding taxes for tax year 2024. A payment or response 
+is required within 7 days to avoid legal action.
+
+Amount Due: $6,300.00
+Pay online now: http://irs-payment-portal-secure.com/pay?uid=TX2024
+
+For questions call: 1-800-FAKE-IRS
+
+This is an automated message.
+'''
+
+        # Email 15: Legitimate HR email
+        email15 = b'''Return-Path: <hr@greenworks.com>
+Date: Mon, 27 Oct 2025 08:15:00 +0000
+From: GreenWorks HR <hr@greenworks.com>
+To: all-employees@greenworks.com
+Subject: Open Enrollment for 2026 Benefits Starts Nov 1
+Message-ID: <hr015@greenworks.com>
+Content-Type: text/plain; charset=UTF-8
+
+Hello Team,
+
+Open enrollment for 2026 benefits begins on November 1. Please review your 
+options for medical, dental, and retirement plan changes. An information session 
+will be held on Oct 29 at 3 PM in the main auditorium.
+
+Resources and forms are available on the HR portal.
+
+Best,
+GreenWorks HR
+'''
+
+        # Email 16: Subscription renewal scam
+        email16 = b'''Return-Path: <billing@streamflix-premium.com>
+Date: Mon, 27 Oct 2025 07:55:00 +0000
+From: StreamFlix Billing <billing@streamflix-premium.com>
+To: subscriber@example.com
+Subject: Payment Failed - Reactivate Your Account
+Message-ID: <scam016@streamflix-premium.com>
+Content-Type: text/plain; charset=UTF-8
+
+We were unable to process your monthly payment. Your StreamFlix account will be 
+suspended within 24 hours unless you update your payment details.
+
+Update payment: http://streamflix-billing-update.com/card
+
+Recent transaction: $14.99 on Oct 27, 2025
+
+StreamFlix Support
+'''
+
+        # Email 17: Legitimate university admin notice
+        email17 = b'''Return-Path: <registrar@usc.edu>
+Date: Mon, 27 Oct 2025 07:30:00 +0000
+From: USC Registrar <registrar@usc.edu>
+To: rohan@usc.edu
+Subject: Reminder: Course Enrollment Deadline Nov 5
+Message-ID: <uscreg017@usc.edu>
+Content-Type: text/plain; charset=UTF-8
+
+Dear Student,
+
+This is a reminder that the enrollment add/drop deadline for the Fall 2025 term 
+is November 5. Please finalize your schedule and contact your academic advisor 
+with any questions.
+
+Regards,
+Office of the Registrar
+University of Southern California
+'''
+
+        # Email 18: Fake charity scam
+        email18 = b'''Return-Path: <donations@reliefnow-global.org>
+Date: Mon, 27 Oct 2025 07:10:00 +0000
+From: ReliefNow Global <donations@reliefnow-global.org>
+To: donor@example.com
+Subject: Help Victims of Recent Disaster - Donate Now
+Message-ID: <scam018@reliefnow-global.org>
+Content-Type: text/plain; charset=UTF-8
+
+URGENT RELIEF NEEDED
+
+A major disaster has struck and thousands are affected. Donate now to provide 
+food, shelter, and medical care. Every dollar helps.
+
+Donate securely: http://reliefnow-global-donate.org/secure?campaign=urgent
+
+ReliefNow Global - Registered Charity (EIN: 00-0000000)
+'''
+
+        # Email 19: Business partnership inquiry (legitimate)
+        email19 = b'''Return-Path: <partnerships@mediacollab.io>
+Date: Mon, 27 Oct 2025 06:50:00 +0000
+From: MediaCollab Partnerships <partnerships@mediacollab.io>
+To: partnerships@example.com
+Subject: Potential Partnership Opportunity with MediaCollab
+Message-ID: <biz019@mediacollab.io>
+Content-Type: text/plain; charset=UTF-8
+
+Hello,
+
+I'm reaching out from MediaCollab to explore a potential content partnership 
+with your team. We produce sponsored short-form content and are interested in 
+collaborating on a pilot campaign next quarter.
+
+If interested, please reply and we can set a 20-minute introductory call.
+
+Best,
+Leah Kim
+Head of Partnerships
+MediaCollab
+'''
+
+        # Email 20: Malware-laden attachment disguised as resume
+        email20 = b'''Return-Path: <applicant@jobs-mail.com>
+Date: Mon, 27 Oct 2025 06:30:00 +0000
+From: Job Applicant <applicant@jobs-mail.com>
+To: hiring@example.com
+Subject: Application for Software Engineer - Resume Attached
+Message-ID: <scam020@jobs-mail.com>
+Content-Type: text/plain; charset=UTF-8
+
+Dear Hiring Team,
+
+Please find my resume attached for the Software Engineer position.
+
+Attachment: resume_final_2025.docm
+
+I look forward to the opportunity to discuss my qualifications.
+
+Sincerely,
+A. Candidate
+'''
+
+        # Email 21: Friendly personal email
+        email21 = b'''Return-Path: <friendship@mail.example.com>
+Date: Mon, 27 Oct 2025 06:00:00 +0000
+From: Priya Patel <priya.patel@mail.example.com>
+To: rohan@example.com
+Subject: Weekend hike photos and dinner this Friday?
+Message-ID: <friend021@mail.example.com>
+Content-Type: text/plain; charset=UTF-8
+
+Hey Rohan,
+
+Great hike this weekend - attached are a few of the photos I took. Want to grab 
+dinner this Friday to catch up and plan another trip?
+
+Let me know what works for you.
+
+Cheers,
+Priya
+'''
+
+        return [email1, email2, email3, email4, email5, email6, email7, email8, email9, email10, 
+                email11, email12, email13, email14, email15, email16, email17, email18, 
+                email19, email20, email21]
 
 
 # ============================================================================
