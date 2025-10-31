@@ -14,7 +14,6 @@ import typing as t
 import email as py_email
 from email.policy import default
 
-
 class ParsedEmail(t.NamedTuple):
     message_id: str
     from_addr: str
