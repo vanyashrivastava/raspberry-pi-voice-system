@@ -1,6 +1,6 @@
-from .imap_connector import ImapConnector
-from .email_parser import EmailParser
-from .email_queue_manager import EmailQueueManager
+from imap_connector import ImapConnector
+from email.email_parser import EmailParser
+from email.email_queue_manager import EmailQueueManager
 
 from src.config.model_config import ModelConfig
 from src.config.email_config import EmailConfig
