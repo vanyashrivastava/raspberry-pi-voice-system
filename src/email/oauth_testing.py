@@ -17,9 +17,9 @@ from email.mime.text import MIMEText
 # If modifying these scopes, delete the file token.pickle
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-# OAuth credentials
-CLIENT_ID = '132594459985-cne8lmpvhtjlvjaameqdnanmcqqonum2.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
+# OAuth credentials - for MAIA penny access, not specific to targeted email, this will depend on user input on their own computer
+CLIENT_ID = '132594459985-t6gve02973gl5h2f1og12qcvgf22efv3.apps.googleusercontent.com'
+CLIENT_SECRET = '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'
 
 def get_gmail_service():
     """Authenticates and returns Gmail API service object"""
@@ -101,7 +101,7 @@ def scan_emails(max_results=10, query=''):
         service = get_gmail_service()
         
         print(f"\n{'='*80}")
-        print(f"Scanning emails for: rbpatel@usc.edu")
+        print(f"Scanning for emails")
         print(f"{'='*80}\n")
         
         # Get list of messages
