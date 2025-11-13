@@ -1,0 +1,101 @@
+
+# RASPBERRY PI GMAIL MONITOR - SETUP INSTRUCTIONS
+
+## Method 1: Simple Polling (RECOMMENDED FOR GETTING STARTED)
+
+### Step 1: Initial Setup on Your Computer
+1. Run the script once on your computer to authenticate:
+   python3 gmail_monitor_polling.py
+
+2. This will open a browser and generate a 'token.pickle' file
+
+### Step 2: Transfer to Raspberry Pi
+1. Copy these files to your Raspberry Pi:
+   - gmail_monitor_polling.py
+   - token.pickle (the authentication token)
+
+   scp gmail_monitor_polling.py token.pickle pi@your-pi-ip:~/gmail_monitor/
+
+### Step 3: Install Dependencies on Raspberry Pi
+ssh pi@your-pi-ip
+cd gmail_monitor
+pip3 install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+### Step 4: Test Run
+python3 gmail_monitor_polling.py
+
+### Step 5: Run as Background Service (Auto-start on boot)
+1. Copy service file:
+   sudo cp gmail-monitor.service /etc/systemd/system/
+
+2. Enable and start service:
+   sudo systemctl daemon-reload
+   sudo systemctl enable gmail-monitor.service
+   sudo systemctl start gmail-monitor.service
+
+3. Check status:
+   sudo systemctl status gmail-monitor.service
+
+4. View logs:
+   sudo journalctl -u gmail-monitor.service -f
+
+
+## Configuration Options
+
+### Adjust Check Frequency
+Edit gmail_monitor_polling.py and change:
+CHECK_INTERVAL = 30  # Change to your desired seconds (30 = 30 seconds)
+
+### Customize Email Processing
+Edit the process_new_email() function to add your own logic:
+- Save to database
+- Send notifications
+- Trigger GPIO pins
+- Parse specific content
+- Forward to webhook
+- etc.
+
+
+## Common Commands
+
+# Start service
+sudo systemctl start gmail-monitor.service
+
+# Stop service
+sudo systemctl stop gmail-monitor.service
+
+# Restart service
+sudo systemctl restart gmail-monitor.service
+
+# View logs in real-time
+sudo journalctl -u gmail-monitor.service -f
+
+# Disable auto-start
+sudo systemctl disable gmail-monitor.service
+
+
+## Troubleshooting
+
+1. If authentication fails:
+   - Delete token.pickle
+   - Re-run authentication on your computer
+   - Transfer new token.pickle to Pi
+
+2. If service fails to start:
+   - Check logs: sudo journalctl -u gmail-monitor.service -n 50
+   - Verify file paths in gmail-monitor.service
+   - Ensure Python dependencies are installed
+
+3. To check if it's running:
+   ps aux | grep gmail_monitor
+
+
+## Advanced: Gmail API Push Notifications (More Complex Setup)
+
+For instant notifications instead of polling, you can use Gmail's Push API with Google Cloud Pub/Sub:
+- Requires setting up Cloud Pub/Sub topic
+- Requires public endpoint or Cloud Function
+- More complex but more efficient
+- Watch expires every 7 days and needs renewal
+
+See: https://developers.google.com/gmail/api/guides/push
