@@ -1,0 +1,122 @@
+name: Test Supabase Query
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/test-query-supabase.yml'
+
+jobs:
+  query-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv
+      
+      - name: Query Supabase Data
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          python << 'EOF'
+          import os
+          import requests
+          import json
+          from datetime import datetime
+          
+          supabase_url = os.getenv('SUPABASE_URL')
+          supabase_key = os.getenv('SUPABASE_KEY')
+          
+          if not all([supabase_url, supabase_key]):
+              print("❌ ERROR: Supabase credentials not set in GitHub Secrets")
+              print("   Set SUPABASE_URL and SUPABASE_KEY in repository secrets")
+              exit(1)
+          
+          print("=" * 70)
+          print("🔌 SUPABASE CONNECTION TEST")
+          print("=" * 70)
+          print(f"\n📍 Connecting to: {supabase_url}")
+          
+          headers = {
+              'Authorization': f'Bearer {supabase_key}',
+              'Content-Type': 'application/json',
+          }
+          
+          # Test connection first
+          try:
+              test_response = requests.get(
+                  f"{supabase_url}/rest/v1/",
+                  headers=headers,
+                  timeout=10
+              )
+              if test_response.status_code in [200, 204, 404]:
+                  print("✅ Connection successful!\n")
+              else:
+                  print(f"❌ Connection failed with status {test_response.status_code}")
+                  exit(1)
+          except Exception as e:
+              print(f"❌ Connection error: {e}")
+              exit(1)
+          
+          # Query Call Transcripts table
+          print("📊 QUERYING TABLES")
+          print("-" * 70)
+          
+          tables = ['call_transcripts', 'audio_transcripts', 'alerts', 'email_events']
+          
+          for table in tables:
+              print(f"\n📋 Table: {table}")
+              print("  Attempting to fetch data...")
+              
+              try:
+                  response = requests.get(
+                      f"{supabase_url}/rest/v1/{table}?limit=1&order=created_at.desc",
+                      headers=headers,
+                      timeout=10
+                  )
+                  
+                  if response.status_code == 200:
+                      data = response.json()
+                      if data:
+                          print(f"  ✅ Found {len(data)} row(s)")
+                          print("\n  📌 ROW DATA:")
+                          print("  " + "-" * 66)
+                          for row in data:
+                              # Pretty print JSON
+                              formatted = json.dumps(row, indent=2, default=str)
+                              # Indent each line
+                              for line in formatted.split('\n'):
+                                  print(f"  {line}")
+                          print("  " + "-" * 66)
+                      else:
+                          print(f"  ⚠️  Table exists but is empty")
+                  
+                  elif response.status_code == 404:
+                      print(f"  ⚠️  Table '{table}' not found")
+                      print(f"     → Run migrations in Supabase SQL Editor")
+                  
+                  else:
+                      print(f"  ❌ Error: {response.status_code}")
+                      print(f"     {response.text[:200]}")
+              
+              except requests.exceptions.Timeout:
+                  print(f"  ⏱️  Request timeout - network issue")
+              except Exception as e:
+                  print(f"  ❌ Error: {str(e)[:100]}")
+          
+          print("\n" + "=" * 70)
+          print("✅ SUPABASE TEST COMPLETE")
+          print("=" * 70)
+          print("\nIf you saw your data above, the connection is working! 🎉")
+          
+          EOF

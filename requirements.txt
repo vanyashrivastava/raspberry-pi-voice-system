@@ -32,5 +32,10 @@ numpy
 requests
 beautifulsoup4
 
+# Supabase Integration
+supabase
+python-dotenv
+
 # Optional / developer
 pytest
+pytest-cov

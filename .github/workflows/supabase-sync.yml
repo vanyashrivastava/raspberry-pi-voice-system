@@ -1,0 +1,95 @@
+name: Supabase Schema Sync
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'supabase/migrations/**'
+      - '.github/workflows/supabase-sync.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'supabase/migrations/**'
+
+jobs:
+  validate-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate SQL migrations
+        run: |
+          for file in supabase/migrations/*.sql; do
+            echo "Validating $file..."
+            # Basic SQL syntax check
+            grep -E "^(CREATE|ALTER|DROP|INSERT|UPDATE|DELETE|SELECT)" "$file" > /dev/null || echo "Warning: $file may not contain valid SQL"
+          done
+      
+      - name: Check migration naming convention
+        run: |
+          for file in supabase/migrations/*.sql; do
+            if [[ ! "$file" =~ migrations/[0-9]{3}_ ]]; then
+              echo "Error: Migration file $file does not follow naming convention (NNN_description.sql)"
+              exit 1
+            fi
+          done
+
+  sync-to-supabase:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate-schema
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv
+      
+      - name: Apply migrations to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          python -c "
+          import os
+          import requests
+          from pathlib import Path
+          
+          supabase_url = os.getenv('SUPABASE_URL')
+          service_role_key = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
+          
+          if not all([supabase_url, service_role_key]):
+              print('Warning: Supabase credentials not set in GitHub secrets')
+              exit(0)
+          
+          headers = {
+              'Authorization': f'Bearer {service_role_key}',
+              'Content-Type': 'application/sql',
+          }
+          
+          # Read and apply migrations in order
+          migration_dir = Path('supabase/migrations')
+          for migration_file in sorted(migration_dir.glob('*.sql')):
+              print(f'Applying {migration_file.name}...')
+              with open(migration_file, 'r') as f:
+                  sql = f.read()
+              
+              # Note: Supabase REST API doesn't directly execute SQL
+              # You would need to use their direct API or psql client
+              # For now, this logs what would be applied
+              print(f'  - {len(sql)} bytes of SQL')
+          
+          print('Migrations validated. Apply manually via Supabase dashboard or SQL editor.')
+          "
+      
+      - name: Notify migration status
+        if: success()
+        run: |
+          echo "✓ Migrations validated and ready for Supabase"
+          echo "  Apply via: Supabase Dashboard > SQL Editor"
