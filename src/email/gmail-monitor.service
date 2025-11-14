@@ -1,0 +1,14 @@
+[Unit]
+Description=Gmail Monitor Service
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/gmail_monitor
+ExecStart=/usr/bin/python3 /home/pi/gmail_monitor/gmail_monitor_polling.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
