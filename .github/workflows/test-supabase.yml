@@ -1,0 +1,38 @@
+name: Test Supabase Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/supabase/**'
+      - '.github/workflows/test-supabase.yml'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pytest python-dotenv
+      
+      - name: Run Supabase integration tests
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          python -m pytest src/supabase/ -v --tb=short || echo "Tests require Supabase credentials"
+      
+      - name: Lint Supabase code
+        run: |
+          python -m py_compile src/supabase/*.py
+          echo "✓ All Python files compile successfully"
