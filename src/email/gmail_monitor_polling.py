@@ -16,8 +16,8 @@ from googleapiclient.errors import HttpError
 import base64
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-CLIENT_ID = '132594459985-cne8lmpvhtjlvjaameqdnanmcqqonum2.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
+CLIENT_ID = '132594459985-t6gve02973gl5h2f1og12qcvgf22efv3.apps.googleusercontent.com'
+CLIENT_SECRET = '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'
 
 # Configuration
 CHECK_INTERVAL = 30  # Check every 30 seconds
