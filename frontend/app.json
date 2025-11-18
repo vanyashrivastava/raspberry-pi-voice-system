@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "Penny - Fraud Detection",
+    "slug": "penny-fraud-detector",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "platforms": ["ios", "android", "web"],
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    }
+  }
+}

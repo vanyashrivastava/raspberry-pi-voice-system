@@ -32,10 +32,6 @@ numpy
 requests
 beautifulsoup4
 
-# Supabase Integration
-supabase
-python-dotenv
-
 # Google API libraries (for Gmail OAuth and access)
 google-auth
 google-auth-oauthlib
@@ -43,4 +39,3 @@ google-api-python-client
 
 # Optional / developer
 pytest
-pytest-cov

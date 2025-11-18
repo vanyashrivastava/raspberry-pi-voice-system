@@ -60,3 +60,4 @@ Thumbs.db
 # Test coverage
 .coverage
 htmlcov/
+src/email/credentials.json
