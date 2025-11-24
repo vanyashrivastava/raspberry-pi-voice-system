@@ -24,4 +24,9 @@
     "@babel/core": "^7.12.9",
     "@types/react": "~19.1.10"
   }
+  ,
+  "overrides": {
+    "glob": "10.5.0",
+    "rimraf": "^4.0.0"
+  }
 }
