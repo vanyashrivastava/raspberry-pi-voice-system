@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 // Professional color palette matching landing screen
 const colors = {
@@ -13,11 +14,11 @@ const colors = {
   alertRed: '#FF6B6B',
   alertOrange: '#FFA94D',
   alertGreen: '#51CF66',
-  shadow: 'rgba(0, 0, 0, 0.08)',
+  shadow: '#000000',
 };
 
 // Helper function to determine risk color
-const getRiskColor = (risk) => {
+const getRiskColor = (risk: string) => {
   switch (risk.toLowerCase()) {
     case 'high': return colors.alertRed;
     case 'medium': return colors.alertOrange;
@@ -27,7 +28,7 @@ const getRiskColor = (risk) => {
 };
 
 // Helper function to get risk background
-const getRiskBg = (risk) => {
+const getRiskBg = (risk: string) => {
   switch (risk.toLowerCase()) {
     case 'high': return '#FFF5F5';
     case 'medium': return '#FFF9F0';
@@ -36,7 +37,7 @@ const getRiskBg = (risk) => {
   }
 };
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: any) {
   const [activeFilter, setActiveFilter] = useState('all');
   
   const nursingHomeName = "Silver Oaks";
@@ -62,421 +63,427 @@ export default function HomeScreen() {
   ];
 
   return (
-    <div style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Header */}
-      <div style={styles.header}>
-        <div style={styles.headerLeft}>
-          <h1 style={styles.headerTitle}>{nursingHomeName}</h1>
-          <p style={styles.headerSubtitle}>Nursing Home</p>
-        </div>
-        <div style={styles.logoContainer}>
-          <span style={styles.logoIcon}>🐷</span>
-        </div>
-      </div>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>{nursingHomeName}</Text>
+          <Text style={styles.headerSubtitle}>Nursing Home</Text>
+        </View>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoIcon}>🐷</Text>
+        </View>
+      </View>
 
       {/* Main Stats Card */}
-      <div style={styles.mainStatsCard}>
-        <div style={styles.statsContent}>
-          <div style={styles.statsIcon}>🛡️</div>
-          <div style={styles.statsTextContainer}>
-            <div style={styles.statsNumber}>{residentsMonitored}</div>
-            <div style={styles.statsLabel}>Residents Protected</div>
-          </div>
-        </div>
-        <div style={styles.statsSubInfo}>
+      <View style={styles.mainStatsCard}>
+        <View style={styles.statsContent}>
+          <View style={styles.statsIconContainer}>
+            <Text style={styles.statsIcon}>🛡️</Text>
+          </View>
+          <View style={styles.statsTextContainer}>
+            <Text style={styles.statsNumber}>{residentsMonitored}</Text>
+            <Text style={styles.statsLabel}>Residents Protected</Text>
+          </View>
+        </View>
+        <View style={styles.statsSubInfo}>
           {stats.map((stat, index) => (
-            <div key={index} style={styles.miniStat}>
-              <div style={{...styles.miniStatValue, color: stat.color}}>{stat.value}</div>
-              <div style={styles.miniStatLabel}>{stat.label}</div>
-            </div>
+            <View key={index} style={styles.miniStat}>
+              <Text style={[styles.miniStatValue, { color: stat.color }]}>{stat.value}</Text>
+              <Text style={styles.miniStatLabel}>{stat.label}</Text>
+            </View>
           ))}
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Quick Actions Grid */}
-      <div style={styles.quickActionsContainer}>
-        <h2 style={styles.sectionTitle}>Quick Actions</h2>
-        <div style={styles.menuGrid}>
+      <View style={styles.quickActionsContainer}>
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View style={styles.menuGrid}>
           {menuItems.map((item, index) => (
-            <button
+            <TouchableOpacity
               key={index}
-              style={{...styles.menuButton, '--hover-color': item.color}}
-              onClick={() => console.log(`Navigate to ${item.screen}`)}
+              style={styles.menuButton}
+              onPress={() => navigation?.navigate(item.screen)}
             >
-              <span style={styles.menuIcon}>{item.icon}</span>
-              <span style={styles.menuLabel}>{item.label}</span>
-              <span style={styles.menuArrow}>→</span>
-            </button>
+              <Text style={styles.menuIcon}>{item.icon}</Text>
+              <Text style={styles.menuLabel}>{item.label}</Text>
+              <Text style={styles.menuArrow}>→</Text>
+            </TouchableOpacity>
           ))}
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Recent Alerts Section */}
-      <div style={styles.alertsSection}>
-        <div style={styles.alertsHeader}>
-          <h2 style={styles.sectionTitle}>Recent Alerts</h2>
-          <button style={styles.viewAllButton}>View All</button>
-        </div>
+      <View style={styles.alertsSection}>
+        <View style={styles.alertsHeader}>
+          <Text style={styles.sectionTitle}>Recent Alerts</Text>
+          <TouchableOpacity style={styles.viewAllButton}>
+            <Text style={styles.viewAllButtonText}>View All</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Filter Pills */}
-        <div style={styles.filterContainer}>
+        <View style={styles.filterContainer}>
           {['all', 'high', 'medium', 'low'].map((filter) => (
-            <button
+            <TouchableOpacity
               key={filter}
-              style={{
-                ...styles.filterPill,
-                ...(activeFilter === filter ? styles.filterPillActive : {})
-              }}
-              onClick={() => setActiveFilter(filter)}
+              style={[
+                styles.filterPill,
+                activeFilter === filter && styles.filterPillActive
+              ]}
+              onPress={() => setActiveFilter(filter)}
             >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </button>
+              <Text style={[
+                styles.filterPillText,
+                activeFilter === filter && styles.filterPillTextActive
+              ]}>
+                {filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </Text>
+            </TouchableOpacity>
           ))}
-        </div>
+        </View>
 
         {/* Alerts List */}
-        <div style={styles.alertsList}>
+        <View style={styles.alertsList}>
           {scamAlerts.map((alert) => (
-            <div
+            <TouchableOpacity
               key={alert.id}
-              style={{
-                ...styles.alertCard,
-                borderLeftColor: getRiskColor(alert.risk),
-                backgroundColor: getRiskBg(alert.risk),
-              }}
-              onClick={() => console.log('View alert details', alert.id)}
+              style={[
+                styles.alertCard,
+                { 
+                  borderLeftColor: getRiskColor(alert.risk),
+                  backgroundColor: getRiskBg(alert.risk)
+                }
+              ]}
+              onPress={() => console.log('View alert details', alert.id)}
             >
-              <div style={styles.alertCardHeader}>
-                <div style={styles.alertCardTop}>
-                  <span style={{
-                    ...styles.riskBadge,
-                    backgroundColor: getRiskColor(alert.risk),
-                  }}>
-                    {alert.risk.toUpperCase()}
-                  </span>
-                  <span style={styles.alertTime}>{alert.time}</span>
-                </div>
-              </div>
+              <View style={styles.alertCardHeader}>
+                <View style={styles.alertCardTop}>
+                  <View style={[
+                    styles.riskBadge,
+                    { backgroundColor: getRiskColor(alert.risk) }
+                  ]}>
+                    <Text style={styles.riskBadgeText}>{alert.risk.toUpperCase()}</Text>
+                  </View>
+                  <Text style={styles.alertTime}>{alert.time}</Text>
+                </View>
+              </View>
               
-              <div style={styles.alertCardBody}>
-                <div style={styles.alertResidentName}>{alert.resident}</div>
-                <div style={styles.alertType}>{alert.type}</div>
-              </div>
+              <View style={styles.alertCardBody}>
+                <Text style={styles.alertResidentName}>{alert.resident}</Text>
+                <Text style={styles.alertType}>{alert.type}</Text>
+              </View>
 
-              <div style={styles.alertCardFooter}>
-                <button style={styles.alertActionButton}>
-                  Review Details →
-                </button>
-              </div>
-            </div>
+              <View style={styles.alertCardFooter}>
+                <Text style={styles.alertActionButton}>Review Details →</Text>
+              </View>
+            </TouchableOpacity>
           ))}
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Empty state if no alerts */}
       {scamAlerts.length === 0 && (
-        <div style={styles.emptyState}>
-          <span style={styles.emptyStateIcon}>🎉</span>
-          <p style={styles.emptyStateText}>All clear! No active alerts.</p>
-        </div>
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateIcon}>🎉</Text>
+          <Text style={styles.emptyStateText}>All clear! No active alerts.</Text>
+        </View>
       )}
-    </div>
+    </ScrollView>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    minHeight: '100vh',
+    flex: 1,
     backgroundColor: colors.background,
-    padding: '20px',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    paddingHorizontal: 20,
+    paddingTop: 50,
   },
 
   // Header
   header: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '24px',
-    padding: '16px 0',
+    marginBottom: 24,
+    paddingVertical: 16,
   },
   headerLeft: {
-    display: 'flex',
     flexDirection: 'column',
   },
   headerTitle: {
-    fontSize: '32px',
+    fontSize: 32,
     fontWeight: '800',
     color: colors.textDark,
-    margin: '0 0 4px 0',
-    letterSpacing: '-0.5px',
+    letterSpacing: -0.5,
   },
   headerSubtitle: {
-    fontSize: '14px',
+    fontSize: 14,
     color: colors.textMedium,
-    margin: 0,
     fontWeight: '500',
+    marginTop: 2,
   },
   logoContainer: {
-    width: '56px',
-    height: '56px',
-    borderRadius: '16px',
+    width: 56,
+    height: 56,
+    borderRadius: 16,
     backgroundColor: colors.primaryLight,
-    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: `0 2px 8px ${colors.shadow}`,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   logoIcon: {
-    fontSize: '28px',
+    fontSize: 28,
   },
 
   // Main Stats Card
   mainStatsCard: {
     backgroundColor: colors.white,
-    borderRadius: '20px',
-    padding: '24px',
-    marginBottom: '32px',
-    boxShadow: `0 2px 12px ${colors.shadow}`,
-    border: `2px solid ${colors.primaryLight}`,
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 32,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 2,
+    borderColor: colors.primaryLight,
   },
   statsContent: {
-    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: '20px',
-    marginBottom: '20px',
-    paddingBottom: '20px',
-    borderBottom: `1px solid ${colors.primaryLight}`,
+    marginBottom: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.primaryLight,
   },
-  statsIcon: {
-    fontSize: '48px',
-    width: '72px',
-    height: '72px',
-    display: 'flex',
+  statsIconContainer: {
+    width: 72,
+    height: 72,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.accentLight,
-    borderRadius: '16px',
+    borderRadius: 16,
+    marginRight: 20,
+  },
+  statsIcon: {
+    fontSize: 48,
   },
   statsTextContainer: {
-    display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
   },
   statsNumber: {
-    fontSize: '40px',
+    fontSize: 40,
     fontWeight: '800',
     color: colors.textDark,
-    lineHeight: '1',
+    lineHeight: 44,
   },
   statsLabel: {
-    fontSize: '16px',
+    fontSize: 16,
     color: colors.textMedium,
     fontWeight: '600',
   },
   statsSubInfo: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-around',
-    gap: '16px',
   },
   miniStat: {
-    textAlign: 'center',
+    alignItems: 'center',
     flex: 1,
   },
   miniStatValue: {
-    fontSize: '24px',
+    fontSize: 24,
     fontWeight: '700',
-    marginBottom: '4px',
+    marginBottom: 4,
   },
   miniStatLabel: {
-    fontSize: '11px',
+    fontSize: 11,
     color: colors.textMedium,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px',
+    letterSpacing: 0.5,
   },
 
   // Quick Actions
   quickActionsContainer: {
-    marginBottom: '32px',
+    marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: '20px',
+    fontSize: 20,
     fontWeight: '700',
     color: colors.textDark,
-    marginBottom: '16px',
-    margin: '0 0 16px 0',
+    marginBottom: 16,
   },
   menuGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '12px',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   menuButton: {
+    width: '48%',
     backgroundColor: colors.white,
-    border: 'none',
-    borderRadius: '16px',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    boxShadow: `0 2px 8px ${colors.shadow}`,
-    position: 'relative',
-    overflow: 'hidden',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 12,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   menuIcon: {
-    fontSize: '28px',
-    marginBottom: '4px',
+    fontSize: 28,
+    marginBottom: 8,
   },
   menuLabel: {
-    fontSize: '15px',
+    fontSize: 15,
     fontWeight: '600',
     color: colors.textDark,
   },
   menuArrow: {
     position: 'absolute',
-    bottom: '16px',
-    right: '16px',
-    fontSize: '18px',
+    bottom: 16,
+    right: 16,
+    fontSize: 18,
     color: colors.textMedium,
     opacity: 0.5,
   },
 
   // Alerts Section
   alertsSection: {
-    marginBottom: '24px',
+    marginBottom: 24,
   },
   alertsHeader: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '16px',
+    marginBottom: 16,
   },
   viewAllButton: {
-    backgroundColor: 'transparent',
-    border: 'none',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  viewAllButtonText: {
     color: colors.accent,
-    fontSize: '14px',
+    fontSize: 14,
     fontWeight: '600',
-    cursor: 'pointer',
-    padding: '8px 12px',
-    borderRadius: '8px',
-    transition: 'background-color 0.2s',
   },
 
   // Filter Pills
   filterContainer: {
-    display: 'flex',
-    gap: '8px',
-    marginBottom: '20px',
-    overflowX: 'auto',
-    paddingBottom: '4px',
+    flexDirection: 'row',
+    marginBottom: 20,
+    gap: 8,
   },
   filterPill: {
-    padding: '8px 16px',
-    borderRadius: '20px',
-    border: `2px solid ${colors.primaryLight}`,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: colors.primaryLight,
     backgroundColor: colors.white,
-    color: colors.textMedium,
-    fontSize: '13px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    whiteSpace: 'nowrap',
   },
   filterPillActive: {
     backgroundColor: colors.primary,
-    color: colors.white,
     borderColor: colors.primary,
+  },
+  filterPillText: {
+    color: colors.textMedium,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  filterPillTextActive: {
+    color: colors.white,
   },
 
   // Alert Cards
   alertsList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
+    gap: 12,
   },
   alertCard: {
     backgroundColor: colors.white,
-    borderRadius: '16px',
-    padding: '20px',
-    borderLeft: '6px solid',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    boxShadow: `0 2px 8px ${colors.shadow}`,
+    borderRadius: 16,
+    padding: 20,
+    borderLeftWidth: 6,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    marginBottom: 12,
   },
   alertCardHeader: {
-    marginBottom: '12px',
+    marginBottom: 12,
   },
   alertCardTop: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '8px',
+    marginBottom: 8,
   },
   riskBadge: {
-    fontSize: '11px',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+  },
+  riskBadgeText: {
+    fontSize: 11,
     fontWeight: '700',
     color: colors.white,
-    padding: '4px 10px',
-    borderRadius: '12px',
-    letterSpacing: '0.5px',
+    letterSpacing: 0.5,
   },
   alertTime: {
-    fontSize: '12px',
+    fontSize: 12,
     color: colors.textMedium,
     fontWeight: '500',
   },
   alertCardBody: {
-    marginBottom: '16px',
+    marginBottom: 16,
   },
   alertResidentName: {
-    fontSize: '20px',
+    fontSize: 20,
     fontWeight: '700',
     color: colors.textDark,
-    marginBottom: '4px',
+    marginBottom: 4,
   },
   alertType: {
-    fontSize: '14px',
+    fontSize: 14,
     color: colors.textMedium,
     fontStyle: 'italic',
   },
   alertCardFooter: {
-    borderTop: `1px solid ${colors.primaryLight}`,
-    paddingTop: '12px',
+    borderTopWidth: 1,
+    borderTopColor: colors.primaryLight,
+    paddingTop: 12,
   },
   alertActionButton: {
-    backgroundColor: 'transparent',
-    border: 'none',
     color: colors.accent,
-    fontSize: '14px',
+    fontSize: 14,
     fontWeight: '600',
-    cursor: 'pointer',
-    padding: '0',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
   },
 
   // Empty State
   emptyState: {
-    textAlign: 'center',
-    padding: '60px 20px',
+    alignItems: 'center',
+    padding: 60,
     backgroundColor: colors.white,
-    borderRadius: '20px',
-    marginTop: '20px',
+    borderRadius: 20,
+    marginTop: 20,
   },
   emptyStateIcon: {
-    fontSize: '64px',
-    display: 'block',
-    marginBottom: '16px',
+    fontSize: 64,
+    marginBottom: 16,
   },
   emptyStateText: {
-    fontSize: '16px',
+    fontSize: 16,
     color: colors.textMedium,
-    margin: 0,
   },
-};
+});

@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 // Professional color palette with piggy bank vibes
 const colors = {
@@ -10,225 +11,228 @@ const colors = {
   white: '#FFFFFF',
 };
 
-export default function LandingScreen() {
+export default function LandingScreen({ navigation }: any) {
   return (
-    <div style={styles.container}>
+    <View style={styles.container}>
       {/* Floating decorative elements */}
-      <div style={{...styles.floatingElement, ...styles.float1}} />
-      <div style={{...styles.floatingElement, ...styles.float2}} />
-      <div style={{...styles.floatingElement, ...styles.float3}} />
+      <View style={[styles.floatingElement, styles.float1]} />
+      <View style={[styles.floatingElement, styles.float2]} />
+      <View style={[styles.floatingElement, styles.float3]} />
       
-      <div style={styles.content}>
+      <View style={styles.content}>
         {/* Header Section */}
-        <div style={styles.header}>
-          <h1 style={styles.title}>Penny</h1>
-          <div style={styles.taglineContainer}>
-            <div style={styles.taglineBadge}>
-              <span style={styles.taglineText}>AI-POWERED</span>
-            </div>
-          </div>
-          <p style={styles.subtitle}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Penny</Text>
+          <View style={styles.taglineContainer}>
+            <View style={styles.taglineBadge}>
+              <Text style={styles.taglineText}>AI-POWERED</Text>
+            </View>
+          </View>
+          <Text style={styles.subtitle}>
             Your intelligent fraud detection companion
-          </p>
-        </div>
+          </Text>
+        </View>
         
         {/* Mascot Section */}
-        <div style={styles.mascotContainer}>
-          <div style={styles.piggyCircle}>
-            <span style={styles.piggyEmoji}>🐷</span>
-          </div>
-          <div style={styles.shieldBadge}>
-            <span style={styles.shieldIcon}>🛡️</span>
-          </div>
-        </div>
+        <View style={styles.mascotContainer}>
+          <View style={styles.piggyCircle}>
+            <Text style={styles.piggyEmoji}>🐷</Text>
+          </View>
+          <View style={styles.shieldBadge}>
+            <Text style={styles.shieldIcon}>🛡️</Text>
+          </View>
+        </View>
         
         {/* Features Quick List */}
-        <div style={styles.featuresContainer}>
-          <div style={styles.featureItem}>
-            <span style={styles.featureIcon}>⚡</span>
-            <span style={styles.featureText}>Real-time alerts</span>
-          </div>
-          <div style={styles.featureItem}>
-            <span style={styles.featureIcon}>🔒</span>
-            <span style={styles.featureText}>Bank-level security</span>
-          </div>
-          <div style={styles.featureItem}>
-            <span style={styles.featureIcon}>💡</span>
-            <span style={styles.featureText}>Smart insights</span>
-          </div>
-        </div>
+        <View style={styles.featuresContainer}>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureIcon}>⚡</Text>
+            <Text style={styles.featureText}>Real-time alerts</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureIcon}>🔒</Text>
+            <Text style={styles.featureText}>Bank-level security</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureIcon}>💡</Text>
+            <Text style={styles.featureText}>Smart insights</Text>
+          </View>
+        </View>
         
         {/* CTA Button */}
-        <button style={styles.button}>
-          <span style={styles.buttonText}>Get Started</span>
-          <span style={styles.buttonArrow}>→</span>
-        </button>
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation?.navigate('Home')}
+        >
+          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonArrow}>→</Text>
+        </TouchableOpacity>
         
         {/* Trust Badge */}
-        <p style={styles.trustText}>
+        <Text style={styles.trustText}>
           Trusted by thousands to protect their finances
-        </p>
-      </div>
+        </Text>
+      </View>
 
       {/* Footer */}
-      <p style={styles.footerText}>
+      <Text style={styles.footerText}>
         © 2025 Penny Financial • Secure Your Future
-      </p>
-    </div>
+      </Text>
+    </View>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
+    flex: 1,
     backgroundColor: colors.primaryLight,
-    padding: '60px 24px 30px',
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 24,
     justifyContent: 'space-between',
     position: 'relative',
-    overflow: 'hidden',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   },
   
   // Floating decorative elements
   floatingElement: {
     position: 'absolute',
-    borderRadius: '100%',
+    borderRadius: 100,
     backgroundColor: colors.primary,
     opacity: 0.1,
   },
   float1: {
-    width: '150px',
-    height: '150px',
-    top: '-50px',
-    right: '-30px',
+    width: 150,
+    height: 150,
+    top: -50,
+    right: -30,
   },
   float2: {
-    width: '100px',
-    height: '100px',
-    bottom: '100px',
-    left: '-20px',
+    width: 100,
+    height: 100,
+    bottom: 100,
+    left: -20,
   },
   float3: {
-    width: '80px',
-    height: '80px',
-    top: '200px',
-    left: '-10px',
+    width: 80,
+    height: 80,
+    top: 200,
+    left: -10,
   },
   
   content: {
-    display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    maxWidth: '500px',
-    margin: '0 auto',
+    maxWidth: 500,
+    alignSelf: 'center',
     width: '100%',
   },
   
   // Header Section
   header: {
-    display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: '40px',
-    textAlign: 'center',
+    marginBottom: 40,
   },
   title: {
-    fontSize: '56px',
+    fontSize: 56,
     fontWeight: '800',
     color: colors.textDark,
-    letterSpacing: '-2px',
-    marginBottom: '12px',
-    margin: '0 0 12px 0',
+    letterSpacing: -2,
+    marginBottom: 12,
   },
   taglineContainer: {
-    marginBottom: '16px',
+    marginBottom: 16,
   },
   taglineBadge: {
     backgroundColor: colors.white,
-    padding: '6px 16px',
-    borderRadius: '20px',
-    boxShadow: '0 2px 8px rgba(255, 158, 205, 0.15)',
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 2,
   },
   taglineText: {
-    fontSize: '12px',
+    fontSize: 12,
     fontWeight: '700',
     color: colors.primary,
-    letterSpacing: '1px',
+    letterSpacing: 1,
   },
   subtitle: {
-    fontSize: '17px',
+    fontSize: 17,
     color: colors.textMedium,
-    lineHeight: '24px',
-    maxWidth: '280px',
-    margin: 0,
+    lineHeight: 24,
+    maxWidth: 280,
+    textAlign: 'center',
   },
   
   // Mascot Section
   mascotContainer: {
     position: 'relative',
-    marginBottom: '40px',
-    display: 'flex',
+    marginBottom: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
   piggyCircle: {
-    width: '180px',
-    height: '180px',
-    borderRadius: '90px',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
     backgroundColor: colors.white,
-    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 8px 20px rgba(255, 158, 205, 0.3)',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
   },
   piggyEmoji: {
-    fontSize: '90px',
+    fontSize: 90,
   },
   shieldBadge: {
     position: 'absolute',
-    bottom: '-5px',
-    right: '-5px',
-    width: '60px',
-    height: '60px',
-    borderRadius: '30px',
+    bottom: -5,
+    right: -5,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: colors.accent,
-    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: `4px solid ${colors.primaryLight}`,
-    boxShadow: '0 4px 8px rgba(0, 212, 170, 0.3)',
+    borderWidth: 4,
+    borderColor: colors.primaryLight,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   shieldIcon: {
-    fontSize: '28px',
+    fontSize: 28,
   },
   
   // Features Section
   featuresContainer: {
-    display: 'flex',
     flexDirection: 'row',
-    gap: '20px',
-    marginBottom: '40px',
-    padding: '0 20px',
+    gap: 20,
+    marginBottom: 40,
+    paddingHorizontal: 20,
     width: '100%',
     justifyContent: 'center',
   },
   featureItem: {
-    display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
     flex: 1,
-    maxWidth: '100px',
+    maxWidth: 100,
   },
   featureIcon: {
-    fontSize: '24px',
-    marginBottom: '6px',
+    fontSize: 24,
+    marginBottom: 6,
   },
   featureText: {
-    fontSize: '11px',
+    fontSize: 11,
     color: colors.textMedium,
     textAlign: 'center',
     fontWeight: '600',
@@ -237,45 +241,45 @@ const styles = {
   // Button
   button: {
     backgroundColor: colors.accent,
-    padding: '18px 48px',
-    borderRadius: '30px',
-    display: 'flex',
+    paddingVertical: 18,
+    paddingHorizontal: 48,
+    borderRadius: 30,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: '10px',
-    border: 'none',
-    cursor: 'pointer',
-    boxShadow: '0 6px 12px rgba(0, 212, 170, 0.35)',
-    marginBottom: '20px',
-    transition: 'transform 0.2s, box-shadow 0.2s',
+    gap: 10,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+    marginBottom: 20,
   },
   buttonText: {
-    fontSize: '18px',
+    fontSize: 18,
     fontWeight: '700',
     color: colors.white,
-    letterSpacing: '0.5px',
+    letterSpacing: 0.5,
   },
   buttonArrow: {
-    fontSize: '20px',
+    fontSize: 20,
     color: colors.white,
     fontWeight: '600',
   },
   
   // Trust Badge
   trustText: {
-    fontSize: '13px',
+    fontSize: 13,
     color: colors.textMedium,
     textAlign: 'center',
     fontStyle: 'italic',
-    margin: 0,
   },
   
   // Footer
   footerText: {
-    fontSize: '11px',
+    fontSize: 11,
     color: colors.textMedium,
     textAlign: 'center',
     opacity: 0.6,
-    marginTop: '20px',
+    marginTop: 20,
   },
-};
+});
