@@ -1,143 +1,281 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-// Using a plain View background instead of expo-linear-gradient to avoid an extra dependency
-import { colors } from "../theme/colors";
+import React from 'react';
 
-// --- START: Piggy Mascot Placeholder (Replace this with your actual component) ---
-const PiggyMascot = () => (
-  <View style={styles.mascotPlaceholder}>
-    {/* In a real app, you would use an Image or SVG here.
-      e.g., <Image source={require('./assets/piggy-superhero.png')} style={styles.mascotImage} />
-    */}
-    <Text style={styles.mascotText}>🐷🔎</Text>
-    <Text style={styles.mascotSubText}>PiggyGuard</Text>
-  </View>
-);
-// --- END: Piggy Mascot Placeholder ---
+// Professional color palette with piggy bank vibes
+const colors = {
+  primary: '#FF9ECD',
+  primaryLight: '#FFE5F1',
+  accent: '#00D4AA',
+  textDark: '#2D3436',
+  textMedium: '#636E72',
+  white: '#FFFFFF',
+};
 
-// --- START: Pig Icon for Button ---
-const PiggyIcon = () => (
-    <Text style={styles.buttonIcon}>💰</Text> // Using an emoji for simplicity
-);
-// --- END: Pig Icon for Button ---
-
-export default function LandingScreen({ navigation }) {
-  // Use a solid background color (keeps visual intent without extra package)
+export default function LandingScreen() {
   return (
-  <View style={[styles.container, { backgroundColor: colors.pink }]}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Penny</Text>
-        <Text style={styles.subtitle}>Your financial fraud detection assistant</Text>
+    <div style={styles.container}>
+      {/* Floating decorative elements */}
+      <div style={{...styles.floatingElement, ...styles.float1}} />
+      <div style={{...styles.floatingElement, ...styles.float2}} />
+      <div style={{...styles.floatingElement, ...styles.float3}} />
+      
+      <div style={styles.content}>
+        {/* Header Section */}
+        <div style={styles.header}>
+          <h1 style={styles.title}>Penny</h1>
+          <div style={styles.taglineContainer}>
+            <div style={styles.taglineBadge}>
+              <span style={styles.taglineText}>AI-POWERED</span>
+            </div>
+          </div>
+          <p style={styles.subtitle}>
+            Your intelligent fraud detection companion
+          </p>
+        </div>
         
-        <PiggyMascot />
+        {/* Mascot Section */}
+        <div style={styles.mascotContainer}>
+          <div style={styles.piggyCircle}>
+            <span style={styles.piggyEmoji}>🐷</span>
+          </div>
+          <div style={styles.shieldBadge}>
+            <span style={styles.shieldIcon}>🛡️</span>
+          </div>
+        </div>
         
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <View style={styles.buttonContent}>
-            <PiggyIcon />
-            <Text style={styles.buttonText}>Get Started</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+        {/* Features Quick List */}
+        <div style={styles.featuresContainer}>
+          <div style={styles.featureItem}>
+            <span style={styles.featureIcon}>⚡</span>
+            <span style={styles.featureText}>Real-time alerts</span>
+          </div>
+          <div style={styles.featureItem}>
+            <span style={styles.featureIcon}>🔒</span>
+            <span style={styles.featureText}>Bank-level security</span>
+          </div>
+          <div style={styles.featureItem}>
+            <span style={styles.featureIcon}>💡</span>
+            <span style={styles.featureText}>Smart insights</span>
+          </div>
+        </div>
+        
+        {/* CTA Button */}
+        <button style={styles.button}>
+          <span style={styles.buttonText}>Get Started</span>
+          <span style={styles.buttonArrow}>→</span>
+        </button>
+        
+        {/* Trust Badge */}
+        <p style={styles.trustText}>
+          Trusted by thousands to protect their finances
+        </p>
+      </div>
 
-      <Text style={styles.footerText}>
-        © 2025 PiggyGuard Financial. Secure Your Dough.
-      </Text>
-    </View>
+      {/* Footer */}
+      <p style={styles.footerText}>
+        © 2025 Penny Financial • Secure Your Future
+      </p>
+    </div>
   );
 }
 
-const styles = StyleSheet.create({
-  // Use the entire screen for the gradient
+const styles = {
   container: {
-    flex: 1,
-    paddingHorizontal: 30,
-    justifyContent: 'space-between', // Push content and footer apart
-    paddingTop: 80, // Add top padding for a clean look
-    paddingBottom: 40,
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+    backgroundColor: colors.primaryLight,
+    padding: '60px 24px 30px',
+    justifyContent: 'space-between',
+    position: 'relative',
+    overflow: 'hidden',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   },
+  
+  // Floating decorative elements
+  floatingElement: {
+    position: 'absolute',
+    borderRadius: '100%',
+    backgroundColor: colors.primary,
+    opacity: 0.1,
+  },
+  float1: {
+    width: '150px',
+    height: '150px',
+    top: '-50px',
+    right: '-30px',
+  },
+  float2: {
+    width: '100px',
+    height: '100px',
+    bottom: '100px',
+    left: '-20px',
+  },
+  float3: {
+    width: '80px',
+    height: '80px',
+    top: '200px',
+    left: '-10px',
+  },
+  
   content: {
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    maxWidth: '500px',
+    margin: '0 auto',
+    width: '100%',
+  },
+  
+  // Header Section
+  header: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: '40px',
+    textAlign: 'center',
   },
   title: {
-    fontSize: 52,
-    fontWeight: "900", // Extra bold for professionalism
-    color: colors.textDark, 
-    marginBottom: 8,
-    fontFamily: 'Avenir-Black', // Example of a professional, modern font
+    fontSize: '56px',
+    fontWeight: '800',
+    color: colors.textDark,
+    letterSpacing: '-2px',
+    marginBottom: '12px',
+    margin: '0 0 12px 0',
+  },
+  taglineContainer: {
+    marginBottom: '16px',
+  },
+  taglineBadge: {
+    backgroundColor: colors.white,
+    padding: '6px 16px',
+    borderRadius: '20px',
+    boxShadow: '0 2px 8px rgba(255, 158, 205, 0.15)',
+  },
+  taglineText: {
+    fontSize: '12px',
+    fontWeight: '700',
+    color: colors.primary,
+    letterSpacing: '1px',
   },
   subtitle: {
-    fontSize: 18,
-    textAlign: "center",
-    color: colors.textDark, // Use a darker color for the subtitle for contrast
-    marginBottom: 50,
-    opacity: 0.8,
+    fontSize: '17px',
+    color: colors.textMedium,
+    lineHeight: '24px',
+    maxWidth: '280px',
+    margin: 0,
   },
-  // --- Mascot Styling (Placeholder) ---
-  mascotPlaceholder: {
-    height: 200, // Size of the illustration area
-    width: '100%',
+  
+  // Mascot Section
+  mascotContainer: {
+    position: 'relative',
+    marginBottom: '40px',
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 60,
   },
-  mascotText: {
-    fontSize: 80, // Large emoji/text placeholder
+  piggyCircle: {
+    width: '180px',
+    height: '180px',
+    borderRadius: '90px',
+    backgroundColor: colors.white,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 8px 20px rgba(255, 158, 205, 0.3)',
   },
-  mascotSubText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: colors.textDark,
+  piggyEmoji: {
+    fontSize: '90px',
   },
-  // --- Button Styling ---
+  shieldBadge: {
+    position: 'absolute',
+    bottom: '-5px',
+    right: '-5px',
+    width: '60px',
+    height: '60px',
+    borderRadius: '30px',
+    backgroundColor: colors.accent,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: `4px solid ${colors.primaryLight}`,
+    boxShadow: '0 4px 8px rgba(0, 212, 170, 0.3)',
+  },
+  shieldIcon: {
+    fontSize: '28px',
+  },
+  
+  // Features Section
+  featuresContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '20px',
+    marginBottom: '40px',
+    padding: '0 20px',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  featureItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    flex: 1,
+    maxWidth: '100px',
+  },
+  featureIcon: {
+    fontSize: '24px',
+    marginBottom: '6px',
+  },
+  featureText: {
+    fontSize: '11px',
+    color: colors.textMedium,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  
+  // Button
   button: {
-    backgroundColor: colors.green,
-    paddingVertical: 18, // Slightly larger padding
-    paddingHorizontal: 40,
-    borderRadius: 30, // Highly rounded for the cartoony/minimalistic look
-    elevation: 8, // Stronger elevation for pop
-    shadowColor: colors.green,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    width: '80%', // Make the button wide but centered
-  },
-  buttonContent: {
+    backgroundColor: colors.accent,
+    padding: '18px 48px',
+    borderRadius: '30px',
+    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonIcon: {
-    fontSize: 20,
-    marginRight: 10,
+    gap: '10px',
+    border: 'none',
+    cursor: 'pointer',
+    boxShadow: '0 6px 12px rgba(0, 212, 170, 0.35)',
+    marginBottom: '20px',
+    transition: 'transform 0.2s, box-shadow 0.2s',
   },
   buttonText: {
-    fontSize: 20, // Larger text
-    fontWeight: "bold",
-    color: colors.textDark,
-    fontFamily: 'Avenir-Heavy',
-    textTransform: 'uppercase', // Professional touch
+    fontSize: '18px',
+    fontWeight: '700',
+    color: colors.white,
+    letterSpacing: '0.5px',
   },
-  // --- Footer Styling ---
-  footerText: {
-    fontSize: 12,
-    color: colors.textDark,
+  buttonArrow: {
+    fontSize: '20px',
+    color: colors.white,
+    fontWeight: '600',
+  },
+  
+  // Trust Badge
+  trustText: {
+    fontSize: '13px',
+    color: colors.textMedium,
     textAlign: 'center',
-    opacity: 0.5,
-  }
-});
-
-// --- Example `colors` object structure for context ---
-/* // In ../theme/colors.js
-export const colors = {
-  pink: '#FDE4E4',         // Original pink (can be used for other elements)
-  softPink: '#FFDCEF',    // Lighter pink for gradient
-  headerPurple: '#C6B4E5', // Purple for the top of the gradient
-  gradientGreen: '#A0E4B0',// Light green for the bottom of the gradient
-  green: '#5cb85c',        // Original green (for the button)
-  textDark: '#2C3E50',     // Dark charcoal for high contrast text
-  // ... other colors
+    fontStyle: 'italic',
+    margin: 0,
+  },
+  
+  // Footer
+  footerText: {
+    fontSize: '11px',
+    color: colors.textMedium,
+    textAlign: 'center',
+    opacity: 0.6,
+    marginTop: '20px',
+  },
 };
-*/
