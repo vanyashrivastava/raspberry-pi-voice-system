@@ -1,15 +1,20 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { colors } from "../../theme/colors";
 
-export default function StatsBar({ stats }) {
+export default function StatsBar({ stats, onStatPress }) {
   return (
     <View style={styles.container}>
       {stats.map((stat, index) => (
-        <View key={index} style={styles.statItem}>
+        <TouchableOpacity
+          key={index}
+          style={styles.statItem}
+          onPress={() => onStatPress && onStatPress(index)}
+          activeOpacity={0.7}
+        >
           <Text style={styles.statValue}>{stat.value}</Text>
           <Text style={styles.statLabel}>{stat.label}</Text>
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
