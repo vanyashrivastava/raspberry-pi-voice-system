@@ -10,7 +10,7 @@ const PiggyMascot = () => (
       e.g., <Image source={require('./assets/piggy-superhero.png')} style={styles.mascotImage} />
     */}
     <Text style={styles.mascotText}>🐷🔎</Text>
-    <Text style={styles.mascotSubText}>PiggyGuard</Text>
+    <Text style={styles.mascotSubText}>Penny</Text>
   </View>
 );
 // --- END: Piggy Mascot Placeholder ---
