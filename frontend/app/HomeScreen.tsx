@@ -14,7 +14,7 @@ const colors = {
   alertRed: '#FF6B6B',
   alertOrange: '#FFA94D',
   alertGreen: '#51CF66',
-  shadow: '#000000',
+  shadow: '#f9b9b9ff',
 };
 
 // Helper function to determine risk color

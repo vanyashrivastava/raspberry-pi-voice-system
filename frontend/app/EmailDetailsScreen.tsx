@@ -1,337 +1,243 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Animated } from "react-native";
-import { colors } from "../theme/colors";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 
-// Helper function to dynamically determine risk color
-const getRiskColor = (risk) => {
+// Professional color palette matching landing screen
+const colors = {
+  primary: '#FF9ECD',
+  primaryLight: '#FFE5F1',
+  accent: '#00D4AA',
+  accentLight: '#E0FFF9',
+  textDark: '#2D3436',
+  textMedium: '#636E72',
+  white: '#FFFFFF',
+  background: '#FAFBFC',
+  alertRed: '#FF6B6B',
+  alertOrange: '#FFA94D',
+  alertGreen: '#51CF66',
+  shadow: '#f9b9b9ff',
+};
+
+const getRiskColor = (risk: string) => {
   switch (risk?.toLowerCase()) {
-    case 'high':
-      return colors.alertRed;
-    case 'medium':
-      return colors.alertOrange;
-    case 'low':
-      return colors.alertGreen;
-    default:
-      return colors.textSecondary;
+    case 'high': return colors.alertRed;
+    case 'medium': return colors.alertOrange;
+    case 'low': return colors.alertGreen;
+    default: return colors.textMedium;
   }
 };
 
-export default function EmailDetailsScreen({ route, navigation }) {
+const getRiskBg = (risk: string) => {
+  switch (risk?.toLowerCase()) {
+    case 'high': return '#FFF5F5';
+    case 'medium': return '#FFF9F0';
+    case 'low': return '#F0FFF4';
+    default: return colors.white;
+  }
+};
+
+// Scam education content
+const getScamEducation = (category: string) => {
+  const education: Record<string, { icon: string; title: string; description: string; action: string }> = {
+    "Government Impersonation": {
+      icon: "🏛️",
+      title: "Government Impersonation",
+      description: "Real government agencies never email asking for personal info or threaten immediate action.",
+      action: "Contact the agency directly using official numbers from their website.",
+    },
+    "Grandparent Scam": {
+      icon: "👴",
+      title: "Grandparent Scam",
+      description: "Scammers pretend to be grandchildren in emergencies, requesting wire transfers or gift cards.",
+      action: "Always verify by calling the family member at their known phone number.",
+    },
+    "Healthcare Scam": {
+      icon: "🏥",
+      title: "Healthcare Scam",
+      description: "These impersonate pharmacies or providers to steal Medicare IDs and payment info.",
+      action: "Contact your pharmacy directly using the number on your prescription bottle.",
+    },
+    "Lottery/Prize Scam": {
+      icon: "🎰",
+      title: "Lottery/Prize Scam",
+      description: "You can't win a lottery you didn't enter. Real prizes never require upfront payment.",
+      action: "If you didn't enter, you didn't win. Delete the message.",
+    },
+    "Tech Support Scam": {
+      icon: "💻",
+      title: "Tech Support Scam",
+      description: "Apple, Microsoft, and Google never email about security issues requiring immediate action.",
+      action: "Go directly to the official website by typing the URL yourself.",
+    },
+  };
+  return education[category] || {
+    icon: "⚠️",
+    title: "Suspicious Email",
+    description: "This email contains characteristics commonly found in scam messages.",
+    action: "When in doubt, verify through official channels.",
+  };
+};
+
+// Red flags for each scam type
+const getRedFlags = (category: string): string[] => {
+  const flags: Record<string, string[]> = {
+    "Government Impersonation": ["Requests Social Security Number", "Threatens benefit suspension", "Generic greeting used", "Unofficial sender domain"],
+    "Grandparent Scam": ["Emotional manipulation", "Requests wire transfer", "Asks for secrecy", "Vague about identity"],
+    "Healthcare Scam": ["Requests Medicare ID", "Asks for payment update", "Suspicious pharmacy domain"],
+    "Lottery/Prize Scam": ["Unsolicited prize notification", "Requires upfront fee", "Gift card payment request", "Creates urgency"],
+    "Tech Support Scam": ["Account lock threat", "Phishing link included", "Spoofed company name"],
+  };
+  return flags[category] || ["Suspicious content detected", "Unusual sender address"];
+};
+
+export default function EmailDetailsScreen({ route, navigation }: any) {
   const { email } = route.params;
-  const [action, setAction] = useState(null);
-  const [expandedSection, setExpandedSection] = useState("content");
+  const [actionTaken, setActionTaken] = useState<string | null>(null);
 
   const riskColor = getRiskColor(email.risk);
-
-  // Suspicious keywords to highlight
-  const suspiciousKeywords = [
-    "verify", "confirm", "click here", "urgent", "immediately", "suspended",
-    "locked", "expire", "act now", "limited time", "wire", "gift card",
-    "social security", "medicare", "bank account", "password", "arrested",
-    "grandson", "granddaughter", "refund", "winner", "congratulations"
-  ];
-
-  const highlightKeywords = (text) => {
-    const words = text.split(" ");
-    return words.map((word, index) => {
-      const cleanWord = word.toLowerCase().replace(/[.,!?:]/g, "");
-      const isSuspicious = suspiciousKeywords.some(keyword => 
-        cleanWord.includes(keyword.toLowerCase())
-      );
-      return (
-        <Text
-          key={index}
-          style={isSuspicious ? styles.highlightedKeyword : styles.normalText}
-        >
-          {word}{" "}
-        </Text>
-      );
-    });
-  };
-
-  // Get scam-specific educational content
-  const getScamEducation = (category) => {
-    const education = {
-      "Government Impersonation": {
-        icon: "🏛️",
-        title: "Government Impersonation Scam",
-        description: "The government (SSA, IRS, Medicare) will NEVER email you asking for personal information, threaten to suspend benefits via email, or request immediate payment.",
-        realAction: "Real government agencies send official mail and never demand immediate action.",
-      },
-      "Grandparent Scam": {
-        icon: "👴",
-        title: "Grandparent/Family Emergency Scam",
-        description: "Scammers pretend to be grandchildren in emergency situations, requesting money via wire transfer or gift cards while asking victims to keep it secret.",
-        realAction: "Always verify by calling the family member directly at their known phone number.",
-      },
-      "Healthcare Scam": {
-        icon: "🏥",
-        title: "Healthcare/Pharmacy Scam",
-        description: "These scams impersonate pharmacies or healthcare providers to steal Medicare IDs, payment information, or sell fake medications.",
-        realAction: "Contact your pharmacy or healthcare provider directly using official numbers.",
-      },
-      "Lottery/Prize Scam": {
-        icon: "🎰",
-        title: "Lottery/Prize Scam",
-        description: "You cannot win a lottery or sweepstakes you didn't enter. Legitimate prizes never require upfront fees, especially via gift cards.",
-        realAction: "Real prizes don't require payment. If you didn't enter, you didn't win.",
-      },
-      "Tech Support Scam": {
-        icon: "💻",
-        title: "Tech Support Scam",
-        description: "Tech companies like Apple, Microsoft, and Google will never email you about security issues requiring immediate action through provided links.",
-        realAction: "Go directly to the official website by typing the URL yourself.",
-      },
-      "Fake Order Scam": {
-        icon: "📦",
-        title: "Fake Order/Delivery Scam",
-        description: "Scammers send fake order confirmations to create panic, hoping victims will click malicious links to 'cancel' orders they never placed.",
-        realAction: "Check your actual account on the official website instead of clicking email links.",
-      },
-    };
-    return education[category] || {
-      icon: "⚠️",
-      title: "Suspicious Email",
-      description: "This email contains characteristics commonly found in scam messages.",
-      realAction: "When in doubt, verify through official channels.",
-    };
-  };
-
   const scamInfo = getScamEducation(email.category);
+  const redFlags = getRedFlags(email.category);
 
-  const handleAction = (actionType) => {
-    setAction(actionType);
+  const handleAction = (action: string) => {
+    setActionTaken(action);
     
-    const messages = {
+    const messages: Record<string, { title: string; message: string }> = {
       safe: {
         title: "Marked as Safe",
-        message: `This email from "${email.title}" has been marked as safe. It will be removed from the alerts list.`
+        message: `Email marked safe and removed from alerts.`
       },
       escalate: {
-        title: "Escalated to Security",
-        message: `This email has been escalated to the security team. ${email.resident}'s family will be notified.`
+        title: "Escalated",
+        message: `Sent to security team. ${email.resident}'s family will be notified.`
       },
       block: {
         title: "Sender Blocked",
-        message: `The sender "${email.sender}" has been blocked. Future emails from this address will be automatically filtered.`
+        message: `Future emails from this sender will be filtered.`
       },
-      notify: {
-        title: "Family Notified",
-        message: `${email.resident}'s emergency contacts have been notified about this potential scam attempt.`
-      }
     };
 
     Alert.alert(
-      messages[actionType].title,
-      messages[actionType].message,
-      [{ text: "OK", onPress: () => actionType !== "notify" && actionType !== "block" && setTimeout(() => navigation.goBack(), 500) }]
+      messages[action].title,
+      messages[action].message,
+      [{ text: "OK", onPress: () => action !== "block" && setTimeout(() => navigation?.goBack(), 300) }]
     );
   };
 
-  const CollapsibleSection = ({ title, icon, children, sectionKey }) => (
-    <View style={styles.collapsibleSection}>
-      <TouchableOpacity 
-        style={styles.collapsibleHeader}
-        onPress={() => setExpandedSection(expandedSection === sectionKey ? null : sectionKey)}
-      >
-        <Text style={styles.collapsibleTitle}>{icon} {title}</Text>
-        <Text style={styles.expandIcon}>{expandedSection === sectionKey ? "▼" : "▶"}</Text>
-      </TouchableOpacity>
-      {expandedSection === sectionKey && (
-        <View style={styles.collapsibleContent}>
-          {children}
-        </View>
-      )}
-    </View>
-  );
-
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* HEADER */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>← Back</Text>
-        </TouchableOpacity>
-        <View style={styles.riskBadge(riskColor)}>
-          <Text style={styles.riskBadgeText}>{email.risk?.toUpperCase()} RISK</Text>
+    <ScrollView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <TouchableOpacity onPress={() => navigation?.goBack()}>
+            <Text style={styles.backButton}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Email Details</Text>
+        </View>
+        <View style={[styles.riskBadgeLarge, { backgroundColor: riskColor }]}>
+          <Text style={styles.riskBadgeTextLarge}>{email.risk?.toUpperCase()}</Text>
         </View>
       </View>
 
-      {/* RESIDENT CARD */}
+      {/* Resident Card */}
       <View style={styles.residentCard}>
         <View style={styles.residentAvatar}>
-          <Text style={styles.avatarText}>{email.resident?.charAt(0) || "?"}</Text>
+          <Text style={styles.avatarText}>{email.resident?.charAt(0)}</Text>
         </View>
         <View style={styles.residentDetails}>
-          <Text style={styles.residentName}>{email.resident || "Unknown Resident"}</Text>
-          <Text style={styles.residentRoom}>{email.room || "Room Unknown"}</Text>
+          <Text style={styles.residentName}>{email.resident}</Text>
+          <Text style={styles.residentRoom}>Room {email.room}</Text>
         </View>
-        <Text style={styles.timestamp}>{email.timestamp}</Text>
+        <Text style={styles.timestamp}>{email.time}</Text>
       </View>
 
-      {/* SCAM CATEGORY BANNER */}
-      <View style={[styles.categoryBanner, { backgroundColor: riskColor + '15' }]}>
-        <Text style={styles.categoryIcon}>{scamInfo.icon}</Text>
-        <View style={styles.categoryContent}>
-          <Text style={[styles.categoryTitle, { color: riskColor }]}>{scamInfo.title}</Text>
-          <Text style={styles.categoryDescription}>{scamInfo.description}</Text>
+      {/* Scam Type Card */}
+      <View style={[styles.scamTypeCard, { backgroundColor: getRiskBg(email.risk) }]}>
+        <Text style={styles.scamTypeIcon}>{scamInfo.icon}</Text>
+        <View style={styles.scamTypeContent}>
+          <Text style={[styles.scamTypeTitle, { color: riskColor }]}>{scamInfo.title}</Text>
+          <Text style={styles.scamTypeDescription}>{scamInfo.description}</Text>
         </View>
       </View>
 
-      {/* AI CONFIDENCE METER */}
-      <View style={styles.aiSection}>
-        <Text style={styles.aiTitle}>🤖 AI Detection Confidence</Text>
-        <View style={styles.aiMeter}>
-          <View style={styles.aiMeterTrack}>
-            <View style={[styles.aiMeterFill, { width: `${email.aiConfidence || 85}%`, backgroundColor: riskColor }]} />
+      {/* AI Confidence */}
+      <View style={styles.aiCard}>
+        <View style={styles.aiHeader}>
+          <Text style={styles.aiTitle}>🤖 AI Detection</Text>
+          <Text style={[styles.aiConfidence, { color: riskColor }]}>{email.aiConfidence}%</Text>
+        </View>
+        <View style={styles.aiMeterTrack}>
+          <View style={[styles.aiMeterFill, { width: `${email.aiConfidence}%`, backgroundColor: riskColor }]} />
+        </View>
+        <Text style={styles.aiSubtext}>Confidence this is a scam attempt</Text>
+      </View>
+
+      {/* Email Info */}
+      <View style={styles.infoCard}>
+        <Text style={styles.cardTitle}>📧 Email Information</Text>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>From</Text>
+          <Text style={styles.infoValue}>{email.sender}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Subject</Text>
+          <Text style={styles.infoValue}>{email.subject}</Text>
+        </View>
+        <View style={styles.previewBox}>
+          <Text style={styles.previewLabel}>Preview</Text>
+          <Text style={styles.previewText}>{email.preview}</Text>
+        </View>
+      </View>
+
+      {/* Red Flags */}
+      <View style={styles.flagsCard}>
+        <Text style={styles.cardTitle}>🚩 Red Flags Detected</Text>
+        {redFlags.map((flag, index) => (
+          <View key={index} style={styles.flagItem}>
+            <Text style={styles.flagBullet}>•</Text>
+            <Text style={styles.flagText}>{flag}</Text>
           </View>
-          <Text style={[styles.aiConfidenceText, { color: riskColor }]}>{email.aiConfidence || 85}%</Text>
-        </View>
-        <Text style={styles.aiExplanation}>
-          Our AI analyzed this email and is {email.aiConfidence || 85}% confident it's a scam attempt.
-        </Text>
+        ))}
       </View>
 
-      {/* EMAIL DETAILS - COLLAPSIBLE */}
-      <CollapsibleSection title="Email Details" icon="📧" sectionKey="details">
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>From (Displayed):</Text>
-          <Text style={styles.detailValue}>{email.sender}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Actual Sender:</Text>
-          <Text style={[styles.detailValue, { color: colors.alertRed }]}>{email.senderReal || "Unknown"}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Subject:</Text>
-          <Text style={styles.detailValue}>{email.subject}</Text>
-        </View>
-      </CollapsibleSection>
-
-      {/* EMAIL CONTENT - COLLAPSIBLE */}
-      <CollapsibleSection title="Email Content (Highlighted)" icon="📄" sectionKey="content">
-        <View style={styles.contentBox}>
-          <Text style={styles.contentText}>
-            {highlightKeywords(email.preview || "")}
-          </Text>
-        </View>
-        <View style={styles.legendBox}>
-          <Text style={styles.legendTitle}>Legend:</Text>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: '#FFE4E1' }]} />
-            <Text style={styles.legendText}>Highlighted = Suspicious keyword</Text>
-          </View>
-        </View>
-      </CollapsibleSection>
-
-      {/* RED FLAGS - COLLAPSIBLE */}
-      <CollapsibleSection title="Red Flags Detected" icon="🚩" sectionKey="flags">
-        <View style={styles.flagsContainer}>
-          {(email.flags || ["Suspicious content detected"]).map((flag, index) => (
-            <View key={index} style={styles.flagItem}>
-              <Text style={styles.flagIcon}>⚠️</Text>
-              <Text style={styles.flagText}>{flag}</Text>
-            </View>
-          ))}
-        </View>
-      </CollapsibleSection>
-
-      {/* WHAT TO TELL RESIDENT */}
-      <View style={styles.talkingPointsCard}>
-        <Text style={styles.talkingPointsTitle}>💬 Talking Points for Staff</Text>
-        <Text style={styles.talkingPointsSubtitle}>When discussing with {email.resident?.split(" ")[0] || "the resident"}:</Text>
-        <View style={styles.talkingPoint}>
-          <Text style={styles.talkingPointBullet}>1.</Text>
-          <Text style={styles.talkingPointText}>
-            "This email was flagged by our safety system because it shows signs of a common scam."
-          </Text>
-        </View>
-        <View style={styles.talkingPoint}>
-          <Text style={styles.talkingPointBullet}>2.</Text>
-          <Text style={styles.talkingPointText}>
-            "{scamInfo.realAction}"
-          </Text>
-        </View>
-        <View style={styles.talkingPoint}>
-          <Text style={styles.talkingPointBullet}>3.</Text>
-          <Text style={styles.talkingPointText}>
-            "You did nothing wrong - these scammers are very sophisticated. We're here to help protect you."
-          </Text>
-        </View>
+      {/* Recommended Action */}
+      <View style={styles.recommendCard}>
+        <Text style={styles.cardTitle}>✅ Recommended Response</Text>
+        <Text style={styles.recommendText}>{scamInfo.action}</Text>
       </View>
 
-      {/* SUGGESTED ACTIONS */}
-      <View style={styles.suggestionsCard}>
-        <Text style={styles.suggestionsTitle}>✅ Recommended Actions</Text>
-        <View style={styles.suggestionItem}>
-          <Text style={styles.checkmark}>•</Text>
-          <Text style={styles.suggestionText}>Do NOT click any links in the email</Text>
-        </View>
-        <View style={styles.suggestionItem}>
-          <Text style={styles.checkmark}>•</Text>
-          <Text style={styles.suggestionText}>Do NOT reply or provide any information</Text>
-        </View>
-        <View style={styles.suggestionItem}>
-          <Text style={styles.checkmark}>•</Text>
-          <Text style={styles.suggestionText}>Contact {email.category?.includes("Medicare") ? "Medicare at 1-800-MEDICARE" : "the real organization"} directly</Text>
-        </View>
-        <View style={styles.suggestionItem}>
-          <Text style={styles.checkmark}>•</Text>
-          <Text style={styles.suggestionText}>Document this incident in resident's file</Text>
-        </View>
-      </View>
-
-      {/* ACTION BUTTONS */}
-      {!action && (
-        <View style={styles.actionSection}>
-          <Text style={styles.actionSectionTitle}>Take Action</Text>
-          
-          <View style={styles.buttonRow}>
+      {/* Action Buttons */}
+      {!actionTaken && (
+        <View style={styles.actionsSection}>
+          <Text style={styles.cardTitle}>Take Action</Text>
+          <View style={styles.actionButtons}>
             <TouchableOpacity
-              style={styles.safeButton}
+              style={[styles.actionButton, styles.safeButton]}
               onPress={() => handleAction("safe")}
             >
-              <Text style={styles.buttonIcon}>✓</Text>
-              <Text style={styles.safeButtonText}>Mark Safe</Text>
+              <Text style={styles.actionButtonText}>✓ Mark Safe</Text>
             </TouchableOpacity>
-
             <TouchableOpacity
-              style={styles.escalateButton}
+              style={[styles.actionButton, styles.escalateButton]}
               onPress={() => handleAction("escalate")}
             >
-              <Text style={styles.buttonIcon}>🚨</Text>
-              <Text style={styles.escalateButtonText}>Escalate</Text>
+              <Text style={[styles.actionButtonText, { color: colors.white }]}>🚨 Escalate</Text>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.blockButton}
-              onPress={() => handleAction("block")}
-            >
-              <Text style={styles.buttonIcon}>🚫</Text>
-              <Text style={styles.blockButtonText}>Block Sender</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.notifyButton}
-              onPress={() => handleAction("notify")}
-            >
-              <Text style={styles.buttonIcon}>👨‍👩‍👧</Text>
-              <Text style={styles.notifyButtonText}>Notify Family</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.blockButton]}
+            onPress={() => handleAction("block")}
+          >
+            <Text style={styles.actionButtonText}>🚫 Block Sender</Text>
+          </TouchableOpacity>
         </View>
       )}
 
-      {/* CONFIRMATION */}
-      {action && (
-        <View style={[styles.confirmBox, { backgroundColor: action === "safe" ? colors.lightGreen : colors.pinkLight }]}>
-          <Text style={styles.confirmText}>
-            {action === "safe" && "✓ Marked as safe"}
-            {action === "escalate" && "🚨 Escalated to security team"}
-            {action === "block" && "🚫 Sender has been blocked"}
-            {action === "notify" && "👨‍👩‍👧 Family has been notified"}
+      {/* Confirmation */}
+      {actionTaken && (
+        <View style={[styles.confirmationCard, { backgroundColor: actionTaken === "safe" ? colors.accentLight : colors.primaryLight }]}>
+          <Text style={styles.confirmationText}>
+            {actionTaken === "safe" && "✓ Marked as safe"}
+            {actionTaken === "escalate" && "🚨 Escalated to security"}
+            {actionTaken === "block" && "🚫 Sender blocked"}
           </Text>
         </View>
       )}
@@ -345,56 +251,70 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 50,
     paddingHorizontal: 20,
+    paddingTop: 50,
   },
-  headerContainer: {
+
+  // Header
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
+    alignItems: 'flex-start',
+    marginBottom: 24,
+    paddingVertical: 16,
+  },
+  headerLeft: {
+    flexDirection: 'column',
   },
   backButton: {
-    fontSize: 16,
-    color: colors.textSecondary,
+    fontSize: 14,
+    color: colors.accent,
     fontWeight: '600',
+    marginBottom: 8,
   },
-  riskBadge: (riskColor) => ({
-    backgroundColor: riskColor,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 16,
-  }),
-  riskBadgeText: {
-    fontSize: 12,
-    fontWeight: '900',
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: colors.textDark,
+    letterSpacing: -0.5,
+  },
+  riskBadgeLarge: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+  },
+  riskBadgeTextLarge: {
+    fontSize: 14,
+    fontWeight: '700',
     color: colors.white,
+    letterSpacing: 0.5,
   },
-  // --- Resident Card ---
+
+  // Resident Card
   residentCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
-    padding: 16,
+    padding: 20,
     borderRadius: 16,
     marginBottom: 16,
-    elevation: 2,
     shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   residentAvatar: {
     width: 50,
     height: 50,
-    borderRadius: 25,
-    backgroundColor: colors.pinkLight,
+    borderRadius: 14,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
+    marginRight: 16,
   },
   avatarText: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '800',
     color: colors.textDark,
   },
@@ -403,352 +323,234 @@ const styles = StyleSheet.create({
   },
   residentName: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '700',
     color: colors.textDark,
   },
   residentRoom: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.textMedium,
+    marginTop: 2,
   },
   timestamp: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.textMedium,
   },
-  // --- Category Banner ---
-  categoryBanner: {
+
+  // Scam Type Card
+  scamTypeCard: {
     flexDirection: 'row',
-    padding: 16,
+    padding: 20,
     borderRadius: 16,
     marginBottom: 16,
-    alignItems: 'flex-start',
+    borderWidth: 2,
+    borderColor: colors.primaryLight,
   },
-  categoryIcon: {
-    fontSize: 32,
-    marginRight: 12,
+  scamTypeIcon: {
+    fontSize: 36,
+    marginRight: 16,
   },
-  categoryContent: {
+  scamTypeContent: {
     flex: 1,
   },
-  categoryTitle: {
+  scamTypeTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
     marginBottom: 6,
   },
-  categoryDescription: {
-    fontSize: 13,
-    color: colors.textDark,
-    lineHeight: 18,
+  scamTypeDescription: {
+    fontSize: 14,
+    color: colors.textMedium,
+    lineHeight: 20,
   },
-  // --- AI Section ---
-  aiSection: {
+
+  // AI Card
+  aiCard: {
     backgroundColor: colors.white,
-    padding: 16,
+    padding: 20,
     borderRadius: 16,
     marginBottom: 16,
-    elevation: 2,
     shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  aiTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.textDark,
-    marginBottom: 12,
-  },
-  aiMeter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  aiMeterTrack: {
-    flex: 1,
-    height: 10,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 5,
-    marginRight: 12,
-  },
-  aiMeterFill: {
-    height: '100%',
-    borderRadius: 5,
-  },
-  aiConfidenceText: {
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  aiExplanation: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
-  },
-  // --- Collapsible Sections ---
-  collapsibleSection: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    marginBottom: 12,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-  collapsibleHeader: {
+  aiHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-  },
-  collapsibleTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.textDark,
-  },
-  expandIcon: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  collapsibleContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  // --- Detail Rows ---
-  detailRow: {
     marginBottom: 12,
   },
-  detailLabel: {
-    fontSize: 11,
-    color: colors.textSecondary,
+  aiTitle: {
+    fontSize: 14,
     fontWeight: '600',
-    marginBottom: 4,
-    textTransform: 'uppercase',
+    color: colors.textDark,
   },
-  detailValue: {
+  aiConfidence: {
+    fontSize: 24,
+    fontWeight: '800',
+  },
+  aiMeterTrack: {
+    height: 8,
+    backgroundColor: colors.background,
+    borderRadius: 4,
+    marginBottom: 8,
+  },
+  aiMeterFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  aiSubtext: {
+    fontSize: 12,
+    color: colors.textMedium,
+  },
+
+  // Info Card
+  infoCard: {
+    backgroundColor: colors.white,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.textDark,
+    marginBottom: 16,
+  },
+  infoRow: {
+    marginBottom: 12,
+  },
+  infoLabel: {
+    fontSize: 11,
+    color: colors.textMedium,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  infoValue: {
     fontSize: 14,
     color: colors.textDark,
-    backgroundColor: '#F5F5F5',
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: colors.background,
+    padding: 12,
+    borderRadius: 10,
   },
-  // --- Content Box ---
-  contentBox: {
-    backgroundColor: '#FFFAF0',
+  previewBox: {
+    marginTop: 8,
+  },
+  previewLabel: {
+    fontSize: 11,
+    color: colors.textMedium,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  previewText: {
+    fontSize: 14,
+    color: colors.textDark,
+    backgroundColor: '#FFF9F0',
     padding: 14,
-    borderRadius: 12,
+    borderRadius: 10,
     borderLeftWidth: 4,
     borderLeftColor: colors.alertOrange,
+    lineHeight: 20,
   },
-  contentText: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  normalText: {
-    fontSize: 14,
-    color: colors.textDark,
-    lineHeight: 22,
-  },
-  highlightedKeyword: {
-    fontSize: 14,
-    color: colors.alertRed,
-    fontWeight: 'bold',
-    backgroundColor: '#FFE4E1',
-    lineHeight: 22,
-  },
-  legendBox: {
-    marginTop: 12,
-    padding: 10,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-  },
-  legendTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    marginBottom: 6,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  legendDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 2,
-    marginRight: 8,
-  },
-  legendText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  // --- Flags Container ---
-  flagsContainer: {
-    gap: 8,
+
+  // Flags Card
+  flagsCard: {
+    backgroundColor: colors.white,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   flagItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    marginBottom: 10,
     backgroundColor: '#FFF5F5',
     padding: 12,
     borderRadius: 10,
   },
-  flagIcon: {
+  flagBullet: {
     fontSize: 16,
+    color: colors.alertRed,
     marginRight: 10,
+    fontWeight: '700',
   },
   flagText: {
     fontSize: 14,
     color: colors.textDark,
-    fontWeight: '600',
-  },
-  // --- Talking Points ---
-  talkingPointsCard: {
-    backgroundColor: colors.lightGreen,
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 12,
-  },
-  talkingPointsTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: colors.textDark,
-    marginBottom: 4,
-  },
-  talkingPointsSubtitle: {
-    fontSize: 13,
-    color: colors.textDark,
-    opacity: 0.7,
-    marginBottom: 12,
-  },
-  talkingPoint: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  talkingPointBullet: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: colors.textDark,
-    marginRight: 8,
-  },
-  talkingPointText: {
     flex: 1,
-    fontSize: 14,
-    color: colors.textDark,
-    lineHeight: 20,
   },
-  // --- Suggestions ---
-  suggestionsCard: {
-    backgroundColor: '#F0F8FF',
-    padding: 16,
+
+  // Recommend Card
+  recommendCard: {
+    backgroundColor: colors.accentLight,
+    padding: 20,
     borderRadius: 16,
-    marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4A90D9',
+    marginBottom: 24,
+    borderWidth: 2,
+    borderColor: colors.accent,
   },
-  suggestionsTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+  recommendText: {
+    fontSize: 15,
     color: colors.textDark,
-    marginBottom: 12,
+    lineHeight: 22,
   },
-  suggestionItem: {
-    flexDirection: 'row',
-    marginBottom: 8,
+
+  // Actions
+  actionsSection: {
+    marginBottom: 16,
   },
-  checkmark: {
-    fontSize: 16,
-    color: '#4A90D9',
-    marginRight: 10,
-    fontWeight: '800',
-  },
-  suggestionText: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.textDark,
-    lineHeight: 20,
-  },
-  // --- Action Buttons ---
-  actionSection: {
-    marginTop: 8,
-  },
-  actionSectionTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: colors.textDark,
-    marginBottom: 12,
-  },
-  buttonRow: {
+  actionButtons: {
     flexDirection: 'row',
     gap: 12,
     marginBottom: 12,
   },
-  safeButton: {
+  actionButton: {
     flex: 1,
-    backgroundColor: colors.lightGreen,
     paddingVertical: 16,
     borderRadius: 14,
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
   },
-  safeButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.textDark,
+  safeButton: {
+    backgroundColor: colors.accentLight,
+    borderWidth: 2,
+    borderColor: colors.accent,
   },
   escalateButton: {
-    flex: 1,
     backgroundColor: colors.alertRed,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  escalateButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.white,
   },
   blockButton: {
-    flex: 1,
-    backgroundColor: colors.pinkLight,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    backgroundColor: colors.primaryLight,
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
-  blockButtonText: {
+  actionButtonText: {
     fontSize: 15,
     fontWeight: '700',
     color: colors.textDark,
   },
-  notifyButton: {
-    flex: 1,
-    backgroundColor: '#E8F4FD',
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  notifyButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.textDark,
-  },
-  buttonIcon: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-  // --- Confirmation ---
-  confirmBox: {
-    padding: 18,
-    borderRadius: 14,
+
+  // Confirmation
+  confirmationCard: {
+    padding: 20,
+    borderRadius: 16,
     alignItems: 'center',
   },
-  confirmText: {
+  confirmationText: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.textDark,
