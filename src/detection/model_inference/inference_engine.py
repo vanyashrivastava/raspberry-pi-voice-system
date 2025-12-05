@@ -359,3 +359,16 @@ if __name__ == "__main__":
     ]
     for ex in examples:
         print(ex, "->", e.run_inference(ex))
+
+        from transformers import AutoModel
+
+encoder = AutoModel.from_pretrained("your-base-model")
+trainer = AdversarialTrainer(
+    encoder=encoder,
+    hidden_dim=encoder.config.hidden_size,
+    num_labels=2,
+    num_sensitive=2,
+    lambda_adv=0.5,
+    lr=1e-4,
+)
+model = trainer.train(dataloader, num_epochs=3, device="cuda")

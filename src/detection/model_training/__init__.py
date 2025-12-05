@@ -7,3 +7,7 @@ from .model_trainer import ModelTrainer
 from .model_evaluator import ModelEvaluator
 
 __all__ = ['DataCompiler', 'ModelTrainer', 'ModelEvaluator']
+
+from .adversarial_trainer import AdversarialTrainer
+
+__all__ = ['DataCompiler', 'ModelTrainer', 'ModelEvaluator', 'AdversarialTrainer']
